@@ -8,6 +8,7 @@ import {
   View
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 import colors from '../../styles/colors';
 import fonts from '../../styles/fonts';
@@ -15,6 +16,8 @@ import { Button } from '../components';
 import wateringImg from '../assets/watering.png';
 
 export function Welcome() {
+  const navigation = useNavigation();
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.wrapper}>
@@ -30,7 +33,7 @@ export function Welcome() {
         </Text>
         <Button
           title={<Feather name="chevron-right" style={styles.buttonIcon} />}
-          onPress={() => {}}
+          onPress={() => navigation.navigate('UserIdentification')}
         />
       </View>
     </SafeAreaView>
