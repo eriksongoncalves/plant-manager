@@ -4,7 +4,7 @@ import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 import colors from '../../styles/colors';
 
 type ButtonProps = {
-  title: string;
+  title: string | React.ReactElement;
   onPress: () => void;
 };
 
@@ -27,8 +27,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 16,
     marginBottom: 10,
-    height: 56,
-    paddingHorizontal: 10
+    minWidth: 56,
+    height: 56
   },
   buttonText: {
     fontSize: 24,
