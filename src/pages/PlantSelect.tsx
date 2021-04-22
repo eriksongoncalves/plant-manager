@@ -6,6 +6,7 @@ import {
   FlatList,
   ActivityIndicator
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 import colors from '../../styles/colors';
 import fonts from '../../styles/fonts';
@@ -34,6 +35,7 @@ type Plant = {
 };
 
 export function PlantSelect() {
+  const navigation = useNavigation();
   const [enviroments, setEnviroments] = useState<Enviroment[]>([]);
   const [plants, setPlants] = useState<Plant[]>([]);
   const [filtedPlants, setFiltedPlants] = useState<Plant[]>([]);
@@ -91,6 +93,15 @@ export function PlantSelect() {
     fetchPlants();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const handlePlantSelect = useCallback(
+    (plant: Plant) => {
+      navigation.navigate('PlantSave', {
+        plant
+      });
+    },
+    [navigation]
+  );
 
   useEffect(() => {
     async function fetchEnviroment() {
@@ -156,7 +167,12 @@ export function PlantSelect() {
           data={filtedPlants}
           keyExtractor={item => item.id}
           renderItem={({ item }) => {
-            return <PlantCardPrimary data={item} />;
+            return (
+              <PlantCardPrimary
+                data={item}
+                onPress={() => handlePlantSelect(item)}
+              />
+            );
           }}
           ListFooterComponent={
             loadingMore ? <ActivityIndicator color={colors.green} /> : <></>
