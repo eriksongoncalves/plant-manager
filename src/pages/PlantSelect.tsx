@@ -15,23 +15,11 @@ import EnviromentButton from '../components/EnviromentButton';
 import PlantCardPrimary from '../components/PlantCardPrimary';
 import Loading from '../components/Loading';
 import api from '../services/api';
+import { Plant } from '../libs/storage';
 
 type Enviroment = {
   key: string;
   title: string;
-};
-
-type Plant = {
-  id: string;
-  name: string;
-  about: string;
-  water_tips: string;
-  photo: string;
-  environments: string[];
-  frequency: {
-    times: number;
-    repeat_every: string;
-  };
 };
 
 export function PlantSelect() {

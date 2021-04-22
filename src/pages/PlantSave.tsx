@@ -8,7 +8,7 @@ import {
   Platform,
   Alert
 } from 'react-native';
-import { useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { SvgFromUri } from 'react-native-svg';
 import { getBottomSpace } from 'react-native-iphone-x-helper';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -19,25 +19,14 @@ import colors from '../../styles/colors';
 import fonts from '../../styles/fonts';
 import waterdropImage from '../assets/waterdrop.png';
 import { Button } from '../components';
-
-type Plant = {
-  id: string;
-  name: string;
-  about: string;
-  water_tips: string;
-  photo: string;
-  environments: string[];
-  frequency: {
-    times: number;
-    repeat_every: string;
-  };
-};
+import { Plant, savePlant } from '../libs/storage';
 
 type RouteParams = {
   plant: Plant;
 };
 
 export function PlantSave() {
+  const navigation = useNavigation();
   const route = useRoute();
   const { plant } = route.params as RouteParams;
   const [selectedDateTime, setSelectedDateTime] = useState(new Date());
@@ -62,6 +51,26 @@ export function PlantSave() {
   const handleOpenDateTimePickerForAndroid = useCallback(() => {
     setShowDatePicker(oldState => !oldState);
   }, []);
+
+  const handleSavePlant = useCallback(async () => {
+    try {
+      await savePlant({
+        ...plant,
+        dateTimeNotification: selectedDateTime
+      });
+
+      navigation.navigate('Confirmation', {
+        title: 'Tudo certo',
+        subtitle:
+          'Fique tranquilo e sempre vamos lembrar você de cuidar da sua plantinha com muito cuidado.',
+        buttonTitle: 'Muito obrigado :D',
+        icon: 'hug',
+        nextScreen: 'MyPlants'
+      });
+    } catch (error) {
+      Alert.alert('Não foi possível salvar.');
+    }
+  }, [navigation, plant, selectedDateTime]);
 
   return (
     <ScrollView style={styles.container}>
@@ -103,7 +112,7 @@ export function PlantSave() {
           </TouchableOpacity>
         )}
 
-        <Button title="Cadastrar planta" onPress={() => {}} />
+        <Button title="Cadastrar planta" onPress={handleSavePlant} />
       </View>
     </ScrollView>
   );
