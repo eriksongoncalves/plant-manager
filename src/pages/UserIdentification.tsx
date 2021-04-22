@@ -11,6 +11,7 @@ import {
   Keyboard
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import colors from '../../styles/colors';
 import fonts from '../../styles/fonts';
@@ -20,11 +21,19 @@ export function UserIdentification() {
   const navigation = useNavigation();
   const [isFocused, setIsFocused] = useState(false);
   const [isFilled, setIsFilled] = useState(false);
+  const [formError, setFormError] = useState(false);
   const [name, setName] = useState('');
 
-  const handleSubmit = useCallback(() => {
+  const handleSubmit = useCallback(async () => {
+    if (!name) {
+      setFormError(true);
+      return;
+    }
+
+    await AsyncStorage.setItem('@planmanager:user', name);
+
     navigation.navigate('Confirmation');
-  }, [navigation]);
+  }, [name, navigation]);
 
   const handleInputBlur = useCallback(() => {
     setIsFocused(false);
@@ -32,6 +41,7 @@ export function UserIdentification() {
 
   const handleInputFocus = useCallback(() => {
     setIsFocused(true);
+    setFormError(false);
   }, []);
 
   const handleInputChange = useCallback((value: string) => {
@@ -55,7 +65,8 @@ export function UserIdentification() {
             <TextInput
               style={[
                 styles.input,
-                (isFocused || isFilled) && { borderColor: colors.green }
+                (isFocused || isFilled) && { borderColor: colors.green },
+                formError && { borderColor: colors.red }
               ]}
               placeholder="Digite o nome"
               value={name}
@@ -63,6 +74,9 @@ export function UserIdentification() {
               onBlur={handleInputBlur}
               onFocus={handleInputFocus}
             />
+            {formError && (
+              <Text style={styles.text_error}>Campo obrigatório</Text>
+            )}
 
             <View style={styles.footer}>
               <Button title="Confirmar" onPress={handleSubmit} />
@@ -114,6 +128,14 @@ const styles = StyleSheet.create({
     marginTop: 40,
     padding: 10,
     textAlign: 'center'
+  },
+  text_error: {
+    width: '100%',
+    color: colors.red,
+    fontSize: 14,
+    fontFamily: fonts.text,
+    textAlign: 'left',
+    marginTop: 2
   },
   footer: {
     width: '100%',
