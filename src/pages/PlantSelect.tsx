@@ -34,7 +34,7 @@ export function PlantSelect() {
 
   const fetchPlants = useCallback(async () => {
     const { data } = await api.get<Plant[]>(
-      `plants?_sort=name&_order=asc&_page=${page}&_limit=8`
+      `plants?_sort=name&_order=asc&_page=${page}&_limit=10`
     );
 
     if (!data) {
@@ -173,7 +173,8 @@ export function PlantSelect() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
+    backgroundColor: colors.background
   },
   content: {
     paddingHorizontal: 30

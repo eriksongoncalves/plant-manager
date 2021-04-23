@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { format } from 'date-fns';
+import * as Notification from 'expo-notifications';
 
 export type Plant = {
   id: string;
@@ -19,17 +20,50 @@ export type Plant = {
 export type StoragePlantProps = {
   [id: string]: {
     data: Plant;
+    notificationId: string;
   };
 };
 
 export async function savePlant(plant: Plant): Promise<void> {
   try {
+    const nexTime = new Date(plant.dateTimeNotification);
+    const now = new Date();
+    const { times, repeat_every } = plant.frequency;
+
+    if (repeat_every === 'week') {
+      const interval = Math.trunc(7 / times);
+      nexTime.setDate(now.getDate() * interval);
+    } else {
+      nexTime.setDate(nexTime.getDate() + 1);
+    }
+
+    const seconds = Math.abs(
+      Math.ceil(now.getTime() - nexTime.getTime()) / 1000
+    );
+
+    const notificationId = await Notification.scheduleNotificationAsync({
+      content: {
+        title: 'Heeey, 🌱',
+        body: `Está na hora de cuidar da sua ${plant.name}`,
+        sound: true,
+        priority: Notification.AndroidNotificationPriority.HIGH,
+        data: {
+          plant
+        }
+      },
+      trigger: {
+        seconds: seconds < 60 ? 60 : seconds,
+        repeats: true
+      }
+    });
+
     const data = await AsyncStorage.getItem('@planmanager:plants');
     const oldPlants = data ? (JSON.parse(data) as StoragePlantProps) : {};
 
     const newPlant = {
       [plant.id]: {
-        data: plant
+        data: plant,
+        notificationId
       }
     };
 
@@ -71,6 +105,10 @@ export async function loadPlant() {
 export async function removePlant(id: string) {
   const data = await AsyncStorage.getItem('@planmanager:plants');
   const plants = data ? (JSON.parse(data) as StoragePlantProps) : {};
+
+  await Notification.cancelScheduledNotificationAsync(
+    plants[id].notificationId
+  );
 
   delete plants[id];
 
