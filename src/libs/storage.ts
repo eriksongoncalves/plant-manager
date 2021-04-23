@@ -67,3 +67,12 @@ export async function loadPlant() {
     throw new Error(error);
   }
 }
+
+export async function removePlant(id: string) {
+  const data = await AsyncStorage.getItem('@planmanager:plants');
+  const plants = data ? (JSON.parse(data) as StoragePlantProps) : {};
+
+  delete plants[id];
+
+  await AsyncStorage.setItem('@planmanager:plants', JSON.stringify(plants));
+}

@@ -73,7 +73,7 @@ export function PlantSave() {
   }, [navigation, plant, selectedDateTime]);
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
       <View style={styles.plantInfo}>
         <SvgFromUri uri={plant.photo} width={150} height={150} />
 
@@ -121,7 +121,6 @@ export function PlantSave() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-
     backgroundColor: colors.shape
   },
   plantInfo: {
@@ -176,7 +175,7 @@ const styles = StyleSheet.create({
   alertLabel: {
     textAlign: 'center',
     fontFamily: fonts.complement,
-    fontSize: 12,
+    fontSize: 14,
     color: colors.heading,
     marginBottom: 5
   },

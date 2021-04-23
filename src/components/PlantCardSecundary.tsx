@@ -1,6 +1,11 @@
+import { Feather } from '@expo/vector-icons';
 import React from 'react';
-import { Text, StyleSheet, View } from 'react-native';
-import { RectButton, RectButtonProps } from 'react-native-gesture-handler';
+import { Text, StyleSheet, View, Animated } from 'react-native';
+import {
+  RectButton,
+  RectButtonProps,
+  Swipeable
+} from 'react-native-gesture-handler';
 import { SvgFromUri } from 'react-native-svg';
 
 import colors from '../../styles/colors';
@@ -12,18 +17,34 @@ type PlantCardSecundaryProps = {
     photo: string;
     hour: string;
   };
+  handleRemovePlant: () => void;
 } & RectButtonProps;
 
-export function PlantCardSecundary({ data, ...rest }: PlantCardSecundaryProps) {
+export function PlantCardSecundary({
+  data,
+  handleRemovePlant,
+  ...rest
+}: PlantCardSecundaryProps) {
   return (
-    <RectButton style={styles.container} {...rest}>
-      <SvgFromUri uri={data.photo} width={50} height={50} />
-      <Text style={styles.title}>{data.name}</Text>
-      <View style={styles.details}>
-        <Text style={styles.timeLabel}>Regar às</Text>
-        <Text style={styles.time}>{data.hour}</Text>
-      </View>
-    </RectButton>
+    <Swipeable
+      overshootRight={false}
+      renderRightActions={() => (
+        <Animated.View>
+          <RectButton style={styles.buttonRemove} onPress={handleRemovePlant}>
+            <Feather name="trash" size={32} color={colors.white} />
+          </RectButton>
+        </Animated.View>
+      )}
+    >
+      <RectButton style={styles.container} {...rest}>
+        <SvgFromUri uri={data.photo} width={50} height={50} />
+        <Text style={styles.title}>{data.name}</Text>
+        <View style={styles.details}>
+          <Text style={styles.timeLabel}>Regar às</Text>
+          <Text style={styles.time}>{data.hour}</Text>
+        </View>
+      </RectButton>
+    </Swipeable>
   );
 }
 
@@ -49,7 +70,6 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end'
   },
   timeLabel: {
-    marginTop: 5,
     fontSize: 16,
     fontFamily: fonts.text,
     color: colors.body_light
@@ -59,6 +79,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.heading,
     color: colors.body_dark
+  },
+  buttonRemove: {
+    width: 100,
+    height: 85,
+    backgroundColor: colors.red,
+    marginTop: 15,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+    right: 20,
+    paddingLeft: 15
   }
 });
 
