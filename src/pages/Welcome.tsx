@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
   SafeAreaView,
   Text,
@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import colors from '../../styles/colors';
 import fonts from '../../styles/fonts';
@@ -17,6 +18,14 @@ import wateringImg from '../assets/watering.png';
 
 export function Welcome() {
   const navigation = useNavigation();
+
+  const handleNavigation = useCallback(async () => {
+    const username = await AsyncStorage.getItem('@planmanager:user');
+
+    const screen = username ? 'PlantSelect' : 'UserIdentification';
+
+    navigation.navigate(screen);
+  }, [navigation]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -33,7 +42,7 @@ export function Welcome() {
         </Text>
         <Button
           title={<Feather name="chevron-right" style={styles.buttonIcon} />}
-          onPress={() => navigation.navigate('UserIdentification')}
+          onPress={handleNavigation}
         />
       </View>
     </SafeAreaView>
